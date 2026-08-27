@@ -12,16 +12,21 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         java-version: '17'
         distribution: 'temurin'
 
+    - name: Unzip project files
+      run: |
+        unzip -o SmartSpellingKeyboard-GitHub.zip -d extracted_project || true
+
     - name: Find and Build Project
       run: |
-        PROJ_DIR=$(find . -maxdepth 2 -name "build.gradle.kts" -exec dirname {} \;)
+        PROJ_DIR=$(find . -name "build.gradle.kts" -exec dirname {} \; | head -n 1)
         echo "Building in $PROJ_DIR"
-        cd $PROJ_DIR
+        cd "$PROJ_DIR"
+        chmod +x gradlew || true
         gradle assembleDebug
 
     - name: Upload APK
